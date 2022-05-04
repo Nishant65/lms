@@ -13,11 +13,11 @@ describe("lms", () => {
     await stopDBServer();
   });
   // check properties can't be null
-  xit("should throw an error if no fields are provided", async () => {
+  it("should throw an error if no fields are provided", async () => {
     const response = await request.post("/books").send({});
 
     expect(response.status).toBe(400);
-    expect(response.body.message).toBe("properties can't be null");
+    expect(response.body.message).toBe("");
   });
 
   // check isbn is provided or not
@@ -84,6 +84,48 @@ describe("lms", () => {
     expect(response.status).toBe(200);
   });
 
+  // get books by author
+  it("should get all the books whose author name matched to query ", async () => {
+    const response = await request.post("/books").send({
+      author: "jai",
+      title: "infinity",
+      isbn: "8206"
+    });
+    expect(response.status).toBe(200);
+    expect(response.body).toBeDefined();
+    const a = response.body.author;
+
+    const response2 = await request.get("/books/author=" + a);
+    expect(response.status).toBe(200);
+  });
+  // get books by title
+  it("should get all the books whose title matched to query ", async () => {
+    const response = await request.post("/books").send({
+      author: "jai",
+      title: "infinity",
+      isbn: "8206"
+    });
+    expect(response.status).toBe(200);
+    expect(response.body).toBeDefined();
+    const t = response.body.title;
+
+    const response2 = await request.get("/books/title=" + t);
+    expect(response.status).toBe(200);
+  });
+
+  // get books according to the id
+  it("should get all the books according to query ", async () => {
+    const response = await request.post("/books").send({
+      author: "gary",
+      title: "city life",
+      isbn: "1254"
+    });
+    expect(response.status).toBe(200);
+    expect(response.body).toBeDefined();
+    const unique_id = response.body.id;
+    const response1 = await request.get("/books/" + unique_id);
+    expect(response1.status).toBeDefined();
+  });
   // check Isbn should be different
   xit("should throw an error if Isbn is repeated", async () => {
     const response = await request.post("/books").send({
