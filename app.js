@@ -6,10 +6,12 @@ const app = express();
 const bodyparser = require("body-parser");
 const file = yaml.load("./lms.yaml");
 app.use(bodyparser.json());
+
+app.use("/api-docs", swagger.serve, swagger.setup(file));
+
 app.get("/", (req, res) => {
   res.status(200).send(`visit this link <a href="/api-docs/">api-docs</a>`);
 });
-app.use("/api-docs", swagger.serve, swagger.setup(file));
 
 app.use("/books", require("./routes/books"));
 app.use((err, req, res, next) => {

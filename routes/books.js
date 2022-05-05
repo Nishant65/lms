@@ -18,11 +18,26 @@ const schema = Joi.object({
     "any.required": "isbn should be there"
   })
 });
+
+const Updateschema = Joi.object({
+  author: Joi.string().min(3).max(30).optional().messages({
+    "any.required": "author should be provided",
+    "string.base": "title should be type 'string'"
+  }),
+  title: Joi.string().min(3).max(30).optional().messages({
+    "any.required": "title should be provided",
+    "string.base": "title should be type 'string'"
+  }),
+  isbn: Joi.string().min(3).max(30).optional().messages({
+    "any.required": "isbn should be there"
+  })
+});
+
 router.post("/", async (req, res, next) => {
   try {
     const body = await schema.validateAsync(req.body);
 
-    const book = await books.create(body);
+    const book = await books.create(req.body);
     var responseBook = {
       author: book.author,
       title: book.title,
@@ -39,52 +54,65 @@ router.post("/", async (req, res, next) => {
 router.get("/", async (req, res, next) => {
   try {
     let condition = {};
-    if (req.query) {
-      if (req.query.author != null) {
-        condition = { author: request.query.author };
-      }
-      if (req.query.title != null) {
-        condition = { title: request.query.title };
-      }
-      // if (req.query.isbn != null) {
-      //condition = { isbn: request.body.isbn };
-      //}
+    if (req.query.author) {
+      condition["author"] = req.query.author;
+    }
+    if (req.query.title) {
+      condition["title"] = req.query.title;
+    }
+    if (req.query.id) {
+      condition["isbn"] = req.query.isbn;
     }
     const book = await books.find(condition);
-    res.send(book);
+    const Book = await book.map((b) => {
+      return {
+        author: b.author,
+        title: b.title,
+        isbn: b.isbn,
+        id: b._id.toString()
+      };
+    });
+    res.status(200).json(Book);
   } catch (err) {
-    //console.log("hi");
     next(err);
   }
 });
 
 // get book by id
-router.get("/", async (req, res, next) => {
+router.get("/:id", async (req, res, next) => {
   try {
     let book;
 
     book = await books.findById(req.params.id);
     if (book == null) {
-      return res.status(404).send("Cannot find subscriber");
+      return res.status(404).send("Invalid book id");
     }
     res.status(200).json(book);
   } catch (err) {
     next(err);
   }
 });
-// // update book by id
-// router.patch("/:id", async (req, res) => {
-//   if (req.body.author != null) {
-//     res.books.author = req.body.author;
-//   }
-//   if (req.body.title != null) {
-//     res.books.title = req.body.title;
-//   }
-//   if (req.body.isbn != null) {
-//     res.books.isbn = req.body.isbn;
-//   }
-//   const body = await schema.validateAsync(req.body);
-// });
+// update book by id
+router.post("/:id", async (req, res, next) => {
+  try {
+    const unique_id = req.params.id;
+    await Updateschema.validateAsync(req.body);
+    const resbook = await books.findByIdAndUpdate(unique_id, req.body, {
+      new: true
+    });
+    if (!resbook) {
+      console.log("invalid id");
+    }
+    res.status(200).send({
+      author: resbook.author,
+      title: resbook.title,
+      isbn: resbook.isbn,
+      id: resbook._id.toString()
+    });
+  } catch (err) {
+    next(err);
+  }
+});
 
 // delete book by id
 router.delete("/:id", async (req, res) => {

@@ -1,3 +1,4 @@
+//const { date } = require("joi");
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
@@ -5,18 +6,19 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  book_name: {
+  dob: {
     type: String,
     required: true
   },
-  issue_date: {
+  registered_date: {
     type: Date,
     required: true,
     default: Date.now
   },
-  book_return_date: {
+  membership_status: {
     type: String,
-    required: true
+    required: true,
+    default: "silver"
   }
 });
 
