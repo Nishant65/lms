@@ -60,10 +60,14 @@ router.get("/", async (req, res, next) => {
     if (req.query.title) {
       condition["title"] = req.query.title;
     }
-    if (req.query.id) {
+    if (req.query.isbn) {
       condition["isbn"] = req.query.isbn;
     }
+    //console.log(JSON.stringify(condition));
     const book = await books.find(condition);
+
+    //console.log(book + " heyy");
+
     const Book = await book.map((b) => {
       return {
         author: b.author,
@@ -72,6 +76,7 @@ router.get("/", async (req, res, next) => {
         id: b._id.toString()
       };
     });
+
     res.status(200).json(Book);
   } catch (err) {
     next(err);
@@ -103,7 +108,7 @@ router.post("/:id", async (req, res, next) => {
     if (!resbook) {
       console.log("invalid id");
     }
-    res.status(200).send({
+    res.status(201).send({
       author: resbook.author,
       title: resbook.title,
       isbn: resbook.isbn,
