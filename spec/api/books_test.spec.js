@@ -2,7 +2,7 @@ const supertest = require("supertest");
 const { startDBServer, stopDBServer } = require("../../server");
 const app = require("../../app");
 
-describe("lms", () => {
+describe("books", () => {
   const request = supertest(app);
 
   beforeAll(async () => {

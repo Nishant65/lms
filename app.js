@@ -14,6 +14,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/books", require("./routes/books"));
+app.use("/users", require("./routes/users"));
+
 app.use((err, req, res, next) => {
   res.status(400).send({ message: err.message });
 });

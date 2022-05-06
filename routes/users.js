@@ -12,3 +12,10 @@ const postschema = Joi.object({
     "any.required": "dob should be provided"
   })
 });
+
+router.post("/", async (req, res, next) => {
+  try {
+  } catch (err) {
+    next(err);
+  }
+});
