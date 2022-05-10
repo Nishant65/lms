@@ -92,7 +92,14 @@ router.get("/:id", async (req, res, next) => {
     if (book == null) {
       return res.status(404).send("Invalid book id");
     }
-    res.status(200).json(book);
+
+    const responsebook = {
+      author: book.author,
+      title: book.title,
+      isbn: book.isbn,
+      id: book._id.toString()
+    };
+    res.status(200).send(responsebook);
   } catch (err) {
     next(err);
   }
@@ -106,7 +113,7 @@ router.post("/:id", async (req, res, next) => {
       new: true
     });
     if (!resbook) {
-      console.log("invalid id");
+      throw new Error("invalid id");
     }
     res.status(201).send({
       author: resbook.author,

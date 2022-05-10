@@ -1,25 +1,38 @@
 //const { date } = require("joi");
 const mongoose = require("mongoose");
+const books = require("./books");
+const students = require("./students");
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
+// const studentSchema = new mongoose.Schema({
+//   name: {
+//     type: String,
+//     required: true
+//   }
+// });
+
+// module.exports = mongoose.model("student", studentSchema);
+
+const loanSchema = new mongoose.Schema({
+  bookId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "books",
     required: true
   },
-  dob: {
-    type: String,
+  studentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "students",
     required: true
   },
-  registered_date: {
+  outDate: {
     type: Date,
     required: true,
     default: Date.now
   },
-  membership_status: {
-    type: String,
-    required: true,
-    default: "silver"
+  returnDate: {
+    type: Date
+    //require: true,
+    //default: Date.now
   }
 });
 
-module.exports = mongoose.model("Users", userSchema);
+module.exports = mongoose.model("loans", loanSchema);

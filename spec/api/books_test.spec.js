@@ -2,7 +2,7 @@ const supertest = require("supertest");
 const { startDBServer, stopDBServer } = require("../../server");
 const app = require("../../app");
 
-describe("books", () => {
+describe("lms ", () => {
   const request = supertest(app);
 
   beforeAll(async () => {
@@ -12,7 +12,7 @@ describe("books", () => {
   afterAll(async () => {
     await stopDBServer();
   });
-  /*
+
   // check properties can't be null
   xit("should throw an error if no fields are provided", async () => {
     const response = await request.post("/books").send({});
@@ -197,10 +197,10 @@ describe("books", () => {
     expect(response.body.isbn).toBe("5105");
     expect(responsenew.body.id).toBe(unique_id);
     expect(response.body.message).toBe("isbn is updated");
-  });*/
+  });
 
   // update all properties of book with the "id"
-  it("should update all the book properties by id ", async () => {
+  xit("should update all the book properties by id ", async () => {
     const response = await request.post("/books").send({
       author: "thank you",
       isbn: "1238",
