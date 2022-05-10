@@ -24,8 +24,27 @@ const poststudentschema = Joi.object({
 //   })
 // });
 
-// get all users
-router.get("/", async (req, res, next) => {
+// get all students
+router.get("/student", async (req, res, next) => {
+  let condition = {};
+  if (req.query.name) {
+    condition["name"] = req.query.name;
+  }
+  const s = await students.find(condition);
+  if (!s) {
+    throw new Error("Invalid student name");
+  }
+  const response = await s.map((u) => {
+    return {
+      name: u.name,
+      id: u._id.toString()
+    };
+  });
+  res.status(200).send(response);
+});
+
+// get all loans
+router.get("/loan", async (req, res, next) => {
   try {
     let condition = {};
     if (req.query.bookId) {
@@ -42,8 +61,8 @@ router.get("/", async (req, res, next) => {
     }
 
     //console.log(JSON.stringify(condition));
-    //const user = await users.find(condition);
-    const user = await loans.find();
+    const user = await loans.find(condition);
+    //const user = await loans.find();
     //console.log(book + " heyy");
 
     const User = await user.map((u) => {
@@ -51,7 +70,8 @@ router.get("/", async (req, res, next) => {
         bookId: u.bookId,
         studentId: u.studentId,
         outDate: u.outDate,
-        returnDate: u.returnDate
+        returnDate: u.returnDate,
+        id: u._id.toString()
       };
     });
 
@@ -60,9 +80,10 @@ router.get("/", async (req, res, next) => {
     next(err);
   }
 });
-
+// get studnet by id
+router.get("/student/:id", async (req, res, next) => {});
 //get loan by id
-router.get("/:id", async (req, res, next) => {
+router.get("/loan/:id", async (req, res, next) => {
   try {
     const l = await loans.findById(req.params.id);
     if (!l) {
@@ -107,7 +128,7 @@ router.post("/student", async (req, res, next) => {
   }
 });
 
-// add new user
+// create new loan
 router.post("/loan", async (req, res, next) => {
   try {
     //const body = await postloanschema.validateAsync(req.body);
@@ -142,6 +163,7 @@ router.post("/loan", async (req, res, next) => {
 
 //update student info
 router.post("/student/:id", async (req, res, next) => {});
-//update loan info
 
+//update loan info
+// delete loan
 module.exports = router;
