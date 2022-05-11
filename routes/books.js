@@ -86,11 +86,9 @@ router.get("/", async (req, res, next) => {
 // get book by id
 router.get("/:id", async (req, res, next) => {
   try {
-    let book;
-
-    book = await books.findById(req.params.id);
-    if (book == null) {
-      return res.status(404).send("Invalid book id");
+    const book = await books.findById(req.params.id);
+    if (!book) {
+      throw new Error("Invalid book Id");
     }
 
     const responsebook = {
@@ -113,7 +111,7 @@ router.post("/:id", async (req, res, next) => {
       new: true
     });
     if (!resbook) {
-      throw new Error("invalid id");
+      throw new Error("invalid book id");
     }
     res.status(201).send({
       author: resbook.author,
@@ -127,13 +125,16 @@ router.post("/:id", async (req, res, next) => {
 });
 
 // delete book by id
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", async (req, res, next) => {
   try {
     const book = await books.findById(req.params.id);
+    if (!book) {
+      throw new Error("Invalid Book Id");
+    }
     await book.remove();
     console.log("book is deleted");
   } catch (err) {
-    res.status(500).send({ message: err.message });
+    next(err);
   }
 });
 // router.post("/", (req, res, next) => {

@@ -1,5 +1,5 @@
 const express = require("express");
-const { request } = require("http");
+//const { request } = require("http");
 const Joi = require("joi");
 const books = require("../models/books");
 const loans = require("../models/users");
@@ -26,21 +26,25 @@ const poststudentschema = Joi.object({
 
 // get all students
 router.get("/student", async (req, res, next) => {
-  let condition = {};
-  if (req.query.name) {
-    condition["name"] = req.query.name;
+  try {
+    let condition = {};
+    if (req.query.name) {
+      condition["name"] = req.query.name;
+    }
+    const s = await students.find(condition);
+    if (!s) {
+      throw new Error("Invalid student name");
+    }
+    const response = await s.map((u) => {
+      return {
+        name: u.name,
+        id: u._id.toString()
+      };
+    });
+    res.status(200).send(response);
+  } catch (err) {
+    next(err);
   }
-  const s = await students.find(condition);
-  if (!s) {
-    throw new Error("Invalid student name");
-  }
-  const response = await s.map((u) => {
-    return {
-      name: u.name,
-      id: u._id.toString()
-    };
-  });
-  res.status(200).send(response);
 });
 
 // get all loans
@@ -80,8 +84,24 @@ router.get("/loan", async (req, res, next) => {
     next(err);
   }
 });
+
 // get studnet by id
-router.get("/student/:id", async (req, res, next) => {});
+router.get("/student/:id", async (req, res, next) => {
+  try {
+    const s = await students.findById(req.params.id);
+    if (!s) {
+      throw Error("Invalid student Id");
+    }
+    const responsestudent = {
+      name: s.name,
+      id: s._id.toString()
+    };
+    res.status(200).send(responsestudent);
+  } catch (err) {
+    next(err);
+  }
+});
+
 //get loan by id
 router.get("/loan/:id", async (req, res, next) => {
   try {
@@ -117,7 +137,7 @@ router.post("/student", async (req, res, next) => {
 
     const s = await students.create(req.body);
 
-    var responsestudent = {
+    const responsestudent = {
       name: s.name,
       id: s._id.toString()
     };
@@ -162,8 +182,58 @@ router.post("/loan", async (req, res, next) => {
 });
 
 //update student info
-router.post("/student/:id", async (req, res, next) => {});
+router.post("/student/:id", async (req, res, next) => {
+  try {
+    await poststudentschema.validateAsync(req.body);
+    const s = await students.findByIdAndUpdate(req.params.id, req.body, {
+      new: true
+    });
+    if (!s) {
+      throw new Error("Invalid student Id");
+    }
+    const responsestudent = {
+      name: s.name,
+      id: s._id.toString()
+    };
+    res.status(201).send(responsestudent);
+  } catch (err) {
+    next(err);
+  }
+});
 
 //update loan info
+router.post("/loan/:id", async (req, res, next) => {
+  try {
+    const l = await loans.findByIdAndUpdate(req.params.id, req.body, {
+      new: true
+    });
+
+    if (!l) {
+      throw new Error("Invalid loan Id");
+    }
+    const responseloan = {
+      bookId: l.bookId,
+      studentId: l.studentId,
+      outDate: l.outDate,
+      id: l._id.toString()
+    };
+    res.status(201).send(responseloan);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // delete loan
+router.delete("/loan/:id", async (req, res, next) => {
+  try {
+    const l = await loans.findById(req.params.id);
+    if (!l) {
+      throw new Error("Invalid loan Id");
+    }
+    await l.remove();
+    res.status(200).send("loan is deleted");
+  } catch (err) {
+    next(err);
+  }
+});
 module.exports = router;

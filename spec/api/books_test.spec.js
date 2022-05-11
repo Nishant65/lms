@@ -221,4 +221,19 @@ describe("lms ", () => {
     console.log(JSON.stringify(responsenew.body));
     // expect(responsenew.body.message).toBe("books properties is updated");
   });
+
+  // delete book by id
+  xit("should delete the book matched by id", async () => {
+    const book1 = await request.post("/books").send({
+      author: "suresh",
+      title: "titans and demons",
+      isbn: "5105"
+    });
+    expect(book1.status).toBe(200);
+    expect(book1.body).toBeDefined();
+    const unique_id = book1.body.id;
+    const response = await request.delete("/books/" + unique_id);
+
+    expect(response.status).toBe(200);
+  });
 });
