@@ -12,6 +12,10 @@ const bookSchema = new mongoose.Schema({
   isbn: {
     type: String,
     required: true
+  },
+  stock: {
+    type: Number,
+    required: true
   }
 });
 module.exports = mongoose.model("books", bookSchema);

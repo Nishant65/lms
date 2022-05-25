@@ -1,16 +1,6 @@
-//const { date } = require("joi");
 const mongoose = require("mongoose");
 const books = require("./books");
 const students = require("./students");
-
-// const studentSchema = new mongoose.Schema({
-//   name: {
-//     type: String,
-//     required: true
-//   }
-// });
-
-// module.exports = mongoose.model("student", studentSchema);
 
 const loanSchema = new mongoose.Schema({
   bookId: {
@@ -30,7 +20,7 @@ const loanSchema = new mongoose.Schema({
   },
   returnDate: {
     type: Date
-    //require: true,
+    //required: true,
     //default: Date.now
   }
 });

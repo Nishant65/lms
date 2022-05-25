@@ -1,7 +1,7 @@
 const express = require("express");
 const yaml = require("yamljs");
 const swagger = require("swagger-ui-express");
-const { startDBServer, stopDBServer } = require("./server");
+
 const app = express();
 const bodyparser = require("body-parser");
 const file = yaml.load("./lms.yaml");
@@ -14,7 +14,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/books", require("./routes/books"));
-app.use("/users", require("./routes/users"));
+app.use("/loans", require("./routes/loans"));
+app.use("/students", require("./routes/students"));
 
 app.use((err, req, res, next) => {
   res.status(400).send({ message: err.message });
